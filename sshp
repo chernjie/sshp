@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRIME="sglab sglab6 git@github.com git@bitbucket.org laguna datastri"
+PRIME="$(cat ~/.ssh/prime)"
 SSH_CONFIG=$(ls ~/.ssh/config)
 
 function _usage()
