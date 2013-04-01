@@ -4,8 +4,8 @@ sshp
 An ssh helper tool, provides a few helpful commands to everyday ssh-related task.
 
 
-To setup
-========
+To Setup
+--------
 1. Add the following to use Shared SSH connections
 ```
 Host *
@@ -18,11 +18,11 @@ Host *
 ```
 $ echo git@github.com git@bitbucket.org host1 host2 host3 >> ~/.ssh/prime
 ```
+3. Add `sshp` to your `~/bin` directory
 
-To use
-======
-Add `sshp` to your `~/bin` directory
 
+To Use
+------
 ```
 $ sshp
 ```
@@ -32,3 +32,7 @@ $ sshp
 	Usage: ./sshp [-l] #list
 	Usage: ./sshp [-e]
 	Usage: ./sshp [start|status|stop] <host..>
+
+Reference
+---------
+For more information on how to configure your `~/.ssh/config`, see http://linux.die.net/man/5/ssh_config
