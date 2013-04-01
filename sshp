@@ -1,7 +1,6 @@
 #!/bin/bash
 
 SSH_CONFIG=$(ls ~/.ssh/config)
-GREP_OPTIONS=''
 
 if [ "$1" = "-e" ]
 then
@@ -29,8 +28,8 @@ then
 	do
 		sed -n $i,$(expr $i + 3)p $SSH_CONFIG \
 			| sed 's#.*\ \([^\ ]*\)#\1#g' \
-			| xargs printf '%-25s%-60s%-16s%s\n'
-	done
+			| xargs printf '%s %s %s %s\n'
+	done | column -t
 	exit
 fi
 
