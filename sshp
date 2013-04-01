@@ -1,5 +1,6 @@
 #!/bin/bash
 
+PRIME="sglab sglab6 git@github.com git@bitbucket.org laguna datastri"
 SSH_CONFIG=$(ls ~/.ssh/config)
 
 if [ "$1" = "-e" ]
@@ -7,6 +8,23 @@ then
 	vim $0
 	exit
 fi
+
+case $1 in
+	-pk|-kp) $0 prime kill; exit;;
+	-p|prime) shift;
+		case $1 in
+			-k|kill)
+				ps aux | grep [f]NC | awk '{print $2}' | xargs kill -9
+				rm $(grep ControlPath $SSH_CONFIG | awk '{print $2}' | sed "s:%[a-z]:*:g")
+			;;
+			*)
+				echo $PRIME | xargs -n1 -I@ -P100 ssh @ -fNC
+				ps aux | grep [f]NC
+			;;
+		esac
+		exit
+	;;
+esac
 
 if [ "$1" = "-l" ]
 then
