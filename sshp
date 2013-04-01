@@ -9,6 +9,7 @@ function _usage()
 	echo "Usage: ${0##/*/} info [pattern]"
 	echo "Usage: ${0##/*/} [-l] #list"
 	echo "Usage: ${0##/*/} [-e]"
+	echo "Usage: ${0##/*/} [start|status|stop] <host..>"
 	grep -A100 '^#* OPTIONS #*$' $0
 }
 
@@ -25,16 +26,32 @@ function show_ssh_config()
 	done | column -t
 }
 
-function kill_all_ssh()
+function kill_ssh()
 {
-	ps aux | grep [f]NC | awk '{print $2}' | xargs kill -9
-	rm $(grep ControlPath $SSH_CONFIG | awk '{print $2}' | sed "s:%[a-z]:*:g")
+	local _hosts=${@:-$PRIME}
+	for i in $_hosts
+	do
+		ssh -O check $i 2> /dev/null &&
+			ssh -O exit $i
+	done
+}
+
+function ssh_status()
+{
+	local _hosts=${@:-$PRIME}
+	for i in $_hosts
+	do
+		ssh -O check $i
+	done
 }
 
 function ssh_prime()
 {
-	echo $PRIME | xargs -n1 -I@ -P100 ssh @ -fNC
-	ps aux | grep [f]NC	
+	local _hosts=${@:-$PRIME}
+	for i in $_hosts
+	do
+		ssh -fNC $i &
+	done
 }
 
 function list_ssh_host()
@@ -45,16 +62,18 @@ function list_ssh_host()
 ### OPTIONS ###
 case $1 in
 	'')              _usage ;;
+	edit|-e)         vim $0 ;;
 	info)            shift; show_ssh_config $@ ;;
 	list|-l)         list_ssh_host ;;
-	edit|-e)         vim $0 ;;
-	prime|-p)        ssh_prime ;;
-	kill|-k|-pk|-kp) kill_all_ssh ;;
-	local)           screen -R -d -S chernjie;;
+	prime|-p|start)  shift; ssh_prime $@ ;;
+	kill|-k|stop)    shift; kill_ssh $@ ;;
+	status)          shift; ssh_status $@ ;;
+	local)           screen -R -d -S $(whoami) ;;
 	*)
+		ssh -fNC $1
 		case $2 in
 			-d) ssh -v $1 ;;
-			*)  ssh -v $1 -t screen -R -d -S chernjie ;;
+			*)  ssh -v $1 -t screen -R -d -S $(whoami) ;;
 		esac
 	;;
 esac
