@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SSH_CONFIG=$(ls ~/.ssh/config)
+GREP_OPTIONS=''
 
 if [ "$1" = "-e" ]
 then
@@ -8,10 +9,17 @@ then
 	exit
 fi
 
+if [ "$1" = "-l" ]
+then
+	grep -o -E "Host .*" $SSH_CONFIG | sed 's#Host\ ##'
+	exit
+fi
+
 if [ $# -lt 1 ] || [ "$1" = "info" ]
 then
 	echo "Usage: $0 MACHINE [-d]"
 	echo "Usage: $0 info [pattern]"
+	echo "Usage: $0 [-l] #list"
 	echo "Usage: $0 [-e]"
 	
 	# List of HostNames
