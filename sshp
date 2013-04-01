@@ -1,15 +1,28 @@
 #!/bin/bash
 
+SSH_CONFIG=$(ls ~/.ssh/config)
+
 if [ "$1" = "-e" ]
 then
 	vim $0
 	exit
 fi
 
-if [ $# -lt 1 ]
+if [ $# -lt 1 ] || [ "$1" = "info" ]
 then
-	echo "Usage: $0 MACHINE [-d|-e]"
-	echo $(grep Host\  ../.ssh/config | sed 's#Host\ \([a-z0-9]*\)#\1#g' | implode ' ')
+	echo "Usage: $0 MACHINE [-d]"
+	echo "Usage: $0 info [pattern]"
+	echo "Usage: $0 [-e]"
+	
+	# List of HostNames
+	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | implode
+	
+	for i in $(grep "Host .*$2" -n $SSH_CONFIG | sed 's#\([0-9]*\):.*#\1#')
+	do
+		sed -n $i,$(expr $i + 3)p $SSH_CONFIG \
+			| sed 's#.*\ \([^\ ]*\)#\1#g' \
+			| xargs printf '%-25s%-60s%-16s%s\n'
+	done
 	exit
 fi
 
@@ -17,12 +30,10 @@ usermachine=$1
 
 if [ "$usermachine" = "local" ]
 then
-	cmd="screen -R -d -S chernjie"
+	screen -R -d -S chernjie
 elif [ "$2" = "-d" ]
 then
-	cmd="ssh -v $usermachine"
+	ssh -v $usermachine
 else
-	cmd="ssh -v $usermachine -t screen -R -d -S chernjie"
+	ssh -v $usermachine -t screen -R -d -S chernjie
 fi
-
-$cmd
