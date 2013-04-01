@@ -21,6 +21,8 @@ $ echo git@github.com git@bitbucket.org host1 host2 host3 >> ~/.ssh/prime
 
 To use
 ======
+Add `sshp` to your `~/bin` directory
+
 ```
 $ sshp
 ```
