@@ -3,65 +3,58 @@
 PRIME="sglab sglab6 git@github.com git@bitbucket.org laguna datastri"
 SSH_CONFIG=$(ls ~/.ssh/config)
 
-if [ "$1" = "-e" ]
-then
-	vim $0
-	exit
-fi
-
-case $1 in
-	-pk|-kp) $0 prime kill; exit;;
-	-p|prime) shift;
-		case $1 in
-			-k|kill)
-				ps aux | grep [f]NC | awk '{print $2}' | xargs kill -9
-				rm $(grep ControlPath $SSH_CONFIG | awk '{print $2}' | sed "s:%[a-z]:*:g")
-			;;
-			*)
-				echo $PRIME | xargs -n1 -I@ -P100 ssh @ -fNC
-				ps aux | grep [f]NC
-			;;
-		esac
-		exit
-	;;
-esac
-
-if [ "$1" = "-l" ]
-then
-	grep -o -E "Host .*" $SSH_CONFIG | sed 's#Host\ ##'
-	exit
-fi
-
-if [ $# -lt 1 ]
-then
+function _usage()
+{
 	echo "Usage: ${0##/*/} MACHINE [-d]"
 	echo "Usage: ${0##/*/} info [pattern]"
 	echo "Usage: ${0##/*/} [-l] #list"
 	echo "Usage: ${0##/*/} [-e]"
-fi
+	grep -A100 '^#* OPTIONS #*$' $0
+}
 
-if [ $# -lt 1 ] || [ "$1" = "info" ]
-then
+function show_ssh_config()
+{
 	# List of HostNames
 	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | xargs echo
 	
-	for i in $(grep "Host .*$2" -n $SSH_CONFIG | sed 's#\([0-9]*\):.*#\1#')
+	for i in $(grep "Host .*$1" -n $SSH_CONFIG | sed 's#\([0-9]*\):.*#\1#')
 	do
 		sed -n $i,$(expr $i + 3)p $SSH_CONFIG \
 			| sed 's#.*\ \([^\ ]*\)#\1#g' \
 			| xargs printf '%s %s %s %s\n'
 	done | column -t
-	exit
-fi
+}
 
-usermachine=$1
+function kill_all_ssh()
+{
+	ps aux | grep [f]NC | awk '{print $2}' | xargs kill -9
+	rm $(grep ControlPath $SSH_CONFIG | awk '{print $2}' | sed "s:%[a-z]:*:g")
+}
 
-if [ "$usermachine" = "local" ]
-then
-	screen -R -d -S chernjie
-elif [ "$2" = "-d" ]
-then
-	ssh -v $usermachine
-else
-	ssh -v $usermachine -t screen -R -d -S chernjie
-fi
+function ssh_prime()
+{
+	echo $PRIME | xargs -n1 -I@ -P100 ssh @ -fNC
+	ps aux | grep [f]NC	
+}
+
+function list_ssh_host()
+{
+	grep -o -E "Host .*" $SSH_CONFIG | sed 's#Host\ ##'
+}
+
+### OPTIONS ###
+case $1 in
+	'')              _usage ;;
+	info)            shift; show_ssh_config $@ ;;
+	list|-l)         list_ssh_host ;;
+	edit|-e)         vim $0 ;;
+	prime|-p)        ssh_prime ;;
+	kill|-k|-pk|-kp) kill_all_ssh ;;
+	local)           screen -R -d -S chernjie;;
+	*)
+		case $2 in
+			-d) ssh -v $1 ;;
+			*)  ssh -v $1 -t screen -R -d -S chernjie ;;
+		esac
+	;;
+esac
