@@ -14,13 +14,16 @@ then
 	exit
 fi
 
-if [ $# -lt 1 ] || [ "$1" = "info" ]
+if [ $# -lt 1 ]
 then
 	echo "Usage: ${0##/*/} MACHINE [-d]"
 	echo "Usage: ${0##/*/} info [pattern]"
 	echo "Usage: ${0##/*/} [-l] #list"
 	echo "Usage: ${0##/*/} [-e]"
-	
+fi
+
+if [ $# -lt 1 ] || [ "$1" = "info" ]
+then
 	# List of HostNames
 	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | implode
 	
