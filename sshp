@@ -16,10 +16,10 @@ fi
 
 if [ $# -lt 1 ] || [ "$1" = "info" ]
 then
-	echo "Usage: $0 MACHINE [-d]"
-	echo "Usage: $0 info [pattern]"
-	echo "Usage: $0 [-l] #list"
-	echo "Usage: $0 [-e]"
+	echo "Usage: ${0##/*/} MACHINE [-d]"
+	echo "Usage: ${0##/*/} info [pattern]"
+	echo "Usage: ${0##/*/} [-l] #list"
+	echo "Usage: ${0##/*/} [-e]"
 	
 	# List of HostNames
 	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | implode
