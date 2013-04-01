@@ -25,7 +25,7 @@ fi
 if [ $# -lt 1 ] || [ "$1" = "info" ]
 then
 	# List of HostNames
-	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | implode
+	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | xargs echo
 	
 	for i in $(grep "Host .*$2" -n $SSH_CONFIG | sed 's#\([0-9]*\):.*#\1#')
 	do
