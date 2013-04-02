@@ -28,16 +28,14 @@ function show_ssh_config()
 
 function kill_ssh()
 {
-	for i in $(ls /tmp/*@* | cut -d: -f1 | cut -d@ -f2)
+	for i in ${1:-$(ls /tmp/*@* | cut -d: -f1 | cut -d@ -f2)}
 	do
-		for i in $(sshscreen info | grep $i | cut -d' ' -f1)
+		for i in ${1-:$($0 info | grep $i | cut -d' ' -f1)}
 		do		
 			ssh -O check $i 2> /dev/null &&
 				ssh -O exit $i
 		done
 	done
-	
-	return
 }
 
 function ssh_status()
