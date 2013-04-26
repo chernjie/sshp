@@ -37,10 +37,9 @@ function kill_ssh()
 
 function ssh_status()
 {
-	local _hosts=${@:-$PRIME}
-	for i in $_hosts
+	for i in ${1:-$(ls /tmp/*@* | cut -d: -f1 | cut -d/ -f3)}
 	do
-		ssh -O check $i
+		ssh -O check $i && echo $i
 	done
 }
 
