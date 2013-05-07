@@ -28,11 +28,16 @@ function show_ssh_config()
 
 function kill_ssh()
 {
+	set -x
+	case "$1" in
+		-f|force) local force=1; shift;;
+	esac
 	for i in ${1:-$(ls /tmp/*@* | cut -d: -f1 | cut -d/ -f3)}
 	do
 		ssh -O check $i 2> /dev/null &&
 			ssh -O exit $i
 	done
+	[ -n "$force" ] && rm /tmp/*@*
 }
 
 function ssh_status()
