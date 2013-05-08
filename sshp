@@ -28,7 +28,6 @@ function show_ssh_config()
 
 function kill_ssh()
 {
-	set -x
 	case "$1" in
 		-f|force) local force=1; shift;;
 	esac
