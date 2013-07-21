@@ -9,7 +9,7 @@ function _usage()
 	echo "Usage: ${0##/*/} info [pattern]"
 	echo "Usage: ${0##/*/} [-l] #list"
 	echo "Usage: ${0##/*/} [-e]"
-	echo "Usage: ${0##/*/} [start|status|stop] <host..>"
+	echo "Usage: ${0##/*/} [start|status|stop|proxy] <host..>"
 	grep -A100 '^#* OPTIONS #*$' $0
 }
 
@@ -37,6 +37,9 @@ function kill_ssh()
 			ssh -O exit $i
 	done
 	[ -n "$force" ] && rm /tmp/*@*
+
+	# turn off proxy regardless of which host is selected
+	networksetup -setsocksfirewallproxystate airport off
 }
 
 function ssh_status()
@@ -45,6 +48,14 @@ function ssh_status()
 	do
 		ssh -O check $i && echo $i
 	done
+	networksetup -getsocksfirewallproxy airport
+}
+
+function ssh_tunnel_proxy()
+{
+	ssh $1 -fNCD8888 &&
+		networksetup -setsocksfirewallproxy airport localhost 8888 &&
+		networksetup -setsocksfirewallproxystate airport on
 }
 
 function ssh_prime()
@@ -71,6 +82,7 @@ case $1 in
 	kill|-k|stop)    shift; kill_ssh $@ ;;
 	status)          shift; ssh_status $@ ;;
 	local)           screen -R -d -S $(whoami) ;;
+	proxy)           shift; ssh_tunnel_proxy $1;;
 	*)
 		ssh -fNC $1
 		case $2 in
