@@ -31,7 +31,7 @@ $ sshp
 	Usage: ./sshp info [pattern]
 	Usage: ./sshp [-l] #list
 	Usage: ./sshp [-e]
-	Usage: ./sshp [start|status|stop] <host..>
+	Usage: ./sshp [start|status|stop|proxy] <host..>
 
 Reference
 ---------
