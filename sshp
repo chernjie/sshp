@@ -39,7 +39,7 @@ function kill_ssh()
 	[ -n "$force" ] && rm /tmp/*@*
 
 	# turn off proxy regardless of which host is selected
-	which networksetup >/dev/null || networksetup -setsocksfirewallproxystate airport off
+	which networksetup >/dev/null && networksetup -setsocksfirewallproxystate airport off
 }
 
 function ssh_status()
@@ -48,14 +48,14 @@ function ssh_status()
 	do
 		ssh -O check $i && echo $i
 	done
-	which networksetup >/dev/null || networksetup -getsocksfirewallproxy airport
+	which networksetup >/dev/null && networksetup -getsocksfirewallproxy airport
 }
 
 function ssh_tunnel_proxy()
 {
 	ssh $1 -fNCD8888 &&
-		( which networksetup >/dev/null || networksetup -setsocksfirewallproxy airport localhost 8888 ) &&
-		( which networksetup >/dev/null || networksetup -setsocksfirewallproxystate airport on )
+		( which networksetup >/dev/null && networksetup -setsocksfirewallproxy airport localhost 8888 ) &&
+		( which networksetup >/dev/null && networksetup -setsocksfirewallproxystate airport on )
 }
 
 function ssh_prime()
