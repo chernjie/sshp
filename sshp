@@ -7,7 +7,7 @@ DEVICE_NAME="Wi-Fi"
 function _usage()
 {
 	echo "Usage: ${0##/*/} MACHINE [-d]"
-	echo "Usage: ${0##/*/} info [pattern]"
+	echo "Usage: ${0##/*/} info [pattern] # accepts all options of grep"
 	echo "Usage: ${0##/*/} [-l] #list"
 	echo "Usage: ${0##/*/} [-e]"
 	echo "Usage: ${0##/*/} [start|status|stop|proxy] <host..>"
@@ -16,15 +16,20 @@ function _usage()
 
 function show_ssh_config()
 {
-	# List of HostNames
-	# grep 'Host ' $SSH_CONFIG | sed 's#Host\ \([a-z0-9\.]*\)#\1#g' | xargs echo
-	
-	for i in $(grep "Host .*$1" -n $SSH_CONFIG | sed 's#\([0-9]*\):.*#\1#')
-	do
-		sed -n $i,$(expr $i + 3)p $SSH_CONFIG \
-			| sed 's#.*\ \([^\ ]*\)#\1#g' \
-			| xargs printf '%s %s %s %s\n'
-	done | column -t
+	# accepts all options of grep
+	cat $SSH_CONFIG |
+		while read k v
+		do
+			local isComment="|"
+			case $k in
+				Host) echo ;;
+				"#") isComment=: ;;
+			esac
+			echo $v | tr " " $isComment | xargs printf "%s "
+		done |
+		grep $@ |
+		column -t |
+		tr "|" " "
 }
 
 function kill_ssh()
