@@ -86,7 +86,7 @@ case $1 in
 	list|-l)         list_ssh_host ;;
 	prime|-p|start)  shift; ssh_prime $@ ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
-	status|st)          shift; ssh_status $@ ;;
+	status|st)       shift; ssh_status $@ ;;
 	local)           screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
 	*)
