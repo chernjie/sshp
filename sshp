@@ -25,7 +25,7 @@ function show_ssh_config()
 				Host) echo ;;
 				"#") isComment=: ;;
 			esac
-			echo $v | tr " " $isComment | xargs printf "%s "
+			echo "$v" | tr " " $isComment | xargs printf "%s "
 		done |
 		grep $@ |
 		column -t |
