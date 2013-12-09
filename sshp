@@ -37,24 +37,28 @@ function kill_ssh()
 	case "$1" in
 		-f|force) local force=1; shift;;
 	esac
-	for i in ${1:-$(ls /tmp/*@* | cut -d: -f1 | cut -d/ -f3)}
+	for i in ${1:-$(ls /tmp/*@* 2>/dev/null | cut -d: -f1 | cut -d/ -f3)}
 	do
-		ssh -O check $i 2> /dev/null &&
-			ssh -O exit $i
-	done
-	[ -n "$force" ] && rm /tmp/*@*
+		if ssh -O check $i 2> /dev/null
+		then
+			# if proxy exists for this host, turn it off
+			which networksetup >/dev/null &&
+				test "$(ps aux | grep -c "$i"..[f]NCD)" -ge 1 &&
+				sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
 
-	# turn off proxy regardless of which host is selected
-	which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
+			ssh -O exit $i
+		fi
+	done
+	[ -n "$force" ] && rm /tmp/*@* 2>/dev/null
 }
 
 function ssh_status()
 {
-	for i in ${1:-$(ls /tmp/*@* | cut -d: -f1 | cut -d/ -f3)}
+	for i in ${1:-$(ls /tmp/*@* 2>/dev/null | cut -d: -f1 | cut -d/ -f3)}
 	do
-		ssh -O check $i && echo $i
+		ssh -O check $i 2>&1 | grep pid | sed -E "s,.*(pid=[0-9]*).*,\1 $i,"
 	done
-	which networksetup >/dev/null && networksetup -getsocksfirewallproxy $DEVICE_NAME
+	which networksetup >/dev/null && networksetup -getsocksfirewallproxy $DEVICE_NAME | grep ^Enabled
 }
 
 function ssh_tunnel_proxy()
