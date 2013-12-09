@@ -49,7 +49,13 @@ function kill_ssh()
 			ssh -O exit $i
 		fi
 	done
-	[ -n "$force" ] && rm /tmp/*@* 2>/dev/null
+	if test -n "$force"
+	then
+		rm /tmp/*@* 2>/dev/null
+		which networksetup >/dev/null &&
+			networksetup -getsocksfirewallproxy $DEVICE_NAME | grep ^Enabled | grep Yes -q &&
+			sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
+	fi
 }
 
 function ssh_status()
