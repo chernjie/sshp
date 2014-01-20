@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRIME="$(cat ~/.ssh/prime)"
+PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
 SSH_CONFIG=$(ls ~/.ssh/config)
 DEVICE_NAME="Wi-Fi"
 
