@@ -1,7 +1,8 @@
 #!/bin/bash
 
 PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
-SSH_CONFIG=$(ls ~/.ssh/config)
+SSH_CONFIG=$(test -f ~/.ssh/config || touch ~/.ssh/config; ls ~/.ssh/config)
+test -d "$SSH_CONFIG.d" && cat $SSH_CONFIG.d/* > $SSH_CONFIG
 DEVICE_NAME="Wi-Fi"
 
 function _usage()
