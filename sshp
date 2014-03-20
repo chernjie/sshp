@@ -38,7 +38,7 @@ function kill_ssh()
 	case "$1" in
 		-f|force) local force=1; shift;;
 	esac
-	for i in ${1:-$(ls /tmp/*@* 2>/dev/null | cut -d: -f1 | cut -d/ -f3)}
+	for i in ${1:-$(getActiveConnections | xargs -n1 basename)}
 	do
 		if ssh -O check $i 2> /dev/null
 		then
@@ -52,16 +52,31 @@ function kill_ssh()
 	done
 	if test -n "$force"
 	then
-		rm /tmp/*@* 2>/dev/null
+		getActiveConnections | xargs rm
 		which networksetup >/dev/null &&
 			networksetup -getsocksfirewallproxy $DEVICE_NAME | grep ^Enabled | grep Yes -q &&
 			sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
 	fi
 }
 
+function getActiveConnections()
+{
+	grep ControlPath $SSH_CONFIG |
+		tail -1 |
+		while read i j
+		do
+			echo $j |
+				sed -e s,%.,*,g |
+				while read k
+				do
+					ls $k 2> /dev/null
+				done
+		done
+}
+
 function ssh_status()
 {
-	for i in ${1:-$(ls /tmp/*@* 2>/dev/null | cut -d: -f1 | cut -d/ -f3)}
+	for i in ${1:-$(getActiveConnections | xargs -n1 basename)}
 	do
 		ssh -O check $i 2>&1 | grep pid | sed -E "s,.*(pid=[0-9]*).*,\1 $i,"
 	done
