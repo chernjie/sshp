@@ -101,7 +101,12 @@ function ssh_prime()
 
 function list_ssh_host()
 {
-	grep -o -E "Host .*" $SSH_CONFIG | sed 's#Host\ ##'
+	local REGEXP=${1:-.*}
+	grep "Host " $SSH_CONFIG |
+		while read i j
+		do echo "$j"
+		done |
+		grep "$REGEXP"
 }
 
 ### OPTIONS ###
@@ -109,7 +114,7 @@ case $1 in
 	'')              _usage ;;
 	edit|-e)         vim $0 ;;
 	info)            shift; show_ssh_config $@ ;;
-	list|-l)         list_ssh_host ;;
+	list|-l)         shift; list_ssh_host $@ ;;
 	prime|-p|start)  shift; ssh_prime $@ ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
 	status|st)       shift; ssh_status $@ ;;
