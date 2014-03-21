@@ -38,7 +38,7 @@ function kill_ssh()
 	case "$1" in
 		-f|force) local force=1; shift;;
 	esac
-	for i in ${1:-$(getActiveConnections | xargs -n1 basename)}
+	for i in ${1:-$(getActiveConnections | xargs -n1 basename | cut -d: -f1)}
 	do
 		if ssh -O check $i 2> /dev/null
 		then
@@ -76,7 +76,7 @@ function getActiveConnections()
 
 function ssh_status()
 {
-	for i in ${1:-$(getActiveConnections | xargs -n1 basename)}
+	for i in ${1:-$(getActiveConnections | xargs -n1 basename | cut -d: -f1)}
 	do
 		ssh -O check $i 2>&1 | grep pid | sed -E "s,.*(pid=[0-9]*).*,\1 $i,"
 	done
