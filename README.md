@@ -6,12 +6,13 @@ An ssh helper tool, provides a few helpful commands to everyday ssh-related task
 
 To Setup
 --------
-1. Add the following to use Shared SSH connections
+1. Add the following to your `~/.ssh/config`. This will use Shared SSH connections
 ```
 Host *
 	ForwardAgent yes
 	ControlMaster auto
 	ControlPath /tmp/%r@%h:%p
+	ControlPersist 4h
 ```
 
 2. Add a list of common host to the prime list
@@ -32,6 +33,11 @@ $ sshp
 	Usage: ./sshp [-l] #list
 	Usage: ./sshp [-e]
 	Usage: ./sshp [start|status|stop|proxy] <host..>
+
+Advanced
+--------
+If you want to separate your configuration files to smaller chunks, you can do so by creating a `~/.ssh/config.d` directory and `sshp` will consolidate all files found in this directory into `~/.ssh/config`
+Beware, this will overwrite your `~/.ssh/config` everytime `sshp` is executed.
 
 Reference
 ---------
