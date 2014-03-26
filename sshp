@@ -66,7 +66,7 @@ function getActiveConnections()
 		while read i j
 		do
 			echo $j |
-				sed -e s,%.,*,g |
+				sed -e s,%.,*,g -e s,~,$HOME, |
 				while read k
 				do
 					ls $k 2> /dev/null
