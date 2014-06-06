@@ -2,8 +2,7 @@
 
 DEVICE_NAME="Wi-Fi"
 PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
-SSH_CONFIG=$(test -f ~/.ssh/config || touch ~/.ssh/config; ls ~/.ssh/config)
-test -d "$SSH_CONFIG.d" && cat $SSH_CONFIG.d/* > $SSH_CONFIG
+SSH_CONFIG=$(ls ~/.ssh/config)
 
 function _usage()
 {
@@ -14,6 +13,14 @@ function _usage()
 	echo "Usage: ${0##/*/} [start|status|stop|proxy] <host..>"
 	grep -A100 '^#* OPTIONS #*$' $0
 }
+
+function set_ssh_config()
+{
+	local _config=${1:-~/.ssh/config}
+	SSH_CONFIG=$(test -f $_config || touch $_config; ls $_config)
+	test -d "$SSH_CONFIG.d" && cat $SSH_CONFIG.d/* > $SSH_CONFIG
+}
+set_ssh_config $SSH_CONFIG
 
 function show_ssh_config()
 {
