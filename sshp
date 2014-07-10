@@ -45,15 +45,18 @@ set_ssh_config $SSH_CONFIG
 
 function show_ssh_config()
 {
+	local start=0
 	# accepts all options of grep
-	cat $SSH_CONFIG |
+	grep -C10 $@ $SSH_CONFIG |
 		while read k v
 		do
 			local isComment="|"
 			case $k in
-				Host) echo ;;
+				Host) start=1; echo ;;
 				"#") isComment=: ;;
+				--) start=0; continue ;;
 			esac
+			test $start -eq 0 && continue
 			echo "$v" | tr " " $isComment | xargs printf "%s "
 		done |
 		grep $@ |
