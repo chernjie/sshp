@@ -27,17 +27,22 @@ To Use
 ```
 $ sshp
 ```
-
-	Usage: ./sshp MACHINE [-d]
-	Usage: ./sshp info [pattern]
-	Usage: ./sshp [-l] #list
-	Usage: ./sshp [-e]
-	Usage: ./sshp [start|status|stop|proxy] <host..>
+	sshp <HOST> [-d]
+		Login to MACHINE and start a screen session
+		-d for no screen
+	sshp [info|grep] [pattern]
+		search your ~/.ssh/config and accepts all options of grep
+	sshp [list|-l]
+		list all hosts
+	sshp [start|status|stop] <HOST..>
+		Check the SSH connection status of a HOST
+	sshp proxy <HOST>
+		HOST as proxy server
 
 Advanced
 --------
 If you want to separate your configuration files to smaller chunks, you can do so by creating a `~/.ssh/config.d` directory and `sshp` will consolidate all files found in this directory into `~/.ssh/config`
-Beware, this will overwrite your `~/.ssh/config` everytime `sshp` is executed.
+Beware, this will overwrite your `~/.ssh/config` whenever there are changes in `~/.ssh/config.d`.
 
 Reference
 ---------

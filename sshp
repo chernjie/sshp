@@ -7,11 +7,20 @@ SSH_GATEWAY=milka
 
 function _usage()
 {
-	echo "Usage: ${0##/*/} MACHINE [-d]"
-	echo "Usage: ${0##/*/} info [pattern] # accepts all options of grep"
-	echo "Usage: ${0##/*/} [-l] #list"
-	echo "Usage: ${0##/*/} [-e]"
-	echo "Usage: ${0##/*/} [start|status|stop|proxy] <host..>"
+	cat << USAGE
+	Usage:
+		${0##/*/} <HOST> [-d]
+			Login to MACHINE and start a screen session
+			-d for no screen
+		${0##/*/} [info|grep] [pattern]
+			search your ~/.ssh/config and accepts all options of grep
+		${0##/*/} [list|-l]
+			list all hosts
+		${0##/*/} [start|status|stop] <HOST..>
+			Check the SSH connection status of a HOST 
+		${0##/*/} proxy <HOST>
+			HOST as proxy server
+USAGE
 	grep -A100 '^#* OPTIONS #*$' $0
 }
 
@@ -150,7 +159,7 @@ function list_ssh_host()
 case $1 in
 	'')              _usage ;;
 	edit|-e)         vim $0 ;;
-	info)            shift; show_ssh_config $@ ;;
+	info|grep)       shift; show_ssh_config $@ ;;
 	list|-l)         shift; list_ssh_host $@ ;;
 	prime|-p|start)  shift; ssh_prime $@ ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
