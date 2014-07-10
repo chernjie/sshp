@@ -122,8 +122,8 @@ function ssh_status()
 
 function ssh_tunnel_proxy()
 {
-	ssh $1 -fNCD8888 &&
-		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxy $DEVICE_NAME localhost 8888 ) &&
+	ssh $1 -fNCD3128 &&
+		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxy $DEVICE_NAME localhost 3128 ) &&
 		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME on )
 }
 
