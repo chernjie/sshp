@@ -72,8 +72,7 @@ function show_ssh_config()
 				"#") isComment=: ;;
 				--) start=0; continue ;;
 			esac
-			test $start -eq 0 && continue
-			echo "$v" | tr " " $isComment | xargs printf "%s "
+			test $start -eq 1 && echo -n "${v// /$isComment} "
 		done |
 		grep $@ |
 		column -t |
@@ -160,7 +159,7 @@ function list_ssh_host()
 case $1 in
 	'')              _usage ;;
 	edit|-e)         vim $0 ;;
-	info|grep)       shift; show_ssh_config $@ ;;
+	info|grep|search|s)shift; show_ssh_config $@ ;;
 	list|-l)         shift; list_ssh_host $@ ;;
 	prime|-p|start)  shift; ssh_prime $@ ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
