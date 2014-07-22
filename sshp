@@ -136,6 +136,37 @@ function ssh_tunnel_proxy()
 		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME on )
 }
 
+# http://wiki.gentoo.org/wiki/SSH_jump_host
+# user%host1:22+host2+host3:22
+function ProxyCommand()
+{
+	local  _gateway="$(echo $1 | sed 's/+[^+]*$//;s/\([^+%%]*\)%%\([^+]*\)$/\2 -l \1/;s/:/ -p /')"
+	local   _jumpto="$(echo $1 | sed 's/^.*+//;/:/!s/$/ %p/;s/:/ /')"
+	local  _sshHost=$(echo $_jumpto | cut -d' ' -f1)
+	local  _sshPort=$2
+	local _hostname=$(_getPropertyByHost $_sshHost Hostname)
+	local     _user=$(_getPropertyByHost $_sshHost User)
+	local     _port=$(_getPropertyByHost $_sshHost Port)
+	local _identify=$(_getPropertyByHost $_sshHost IdentityFile)
+
+	test "$_sshPort" = "%p" || _port="$_sshPort"
+	_port=${_port:-"$_sshPort"}
+	test -n "$_user" && _user=$_user@
+	ssh $_gateway nc -q0 $_hostname $_port
+}
+
+function _getPropertyByHost()
+{
+	test $(uname) = "Darwin" && _SED=gsed || _SED=sed
+	if test $_SED = "gsed" && which $_SED
+	then
+		echo gsed command not found
+		echo Consider "brew install gnu-sed"
+		exit 1
+	fi
+	$_SED -n -r -e '/^Host.*\s'$1'(\s|$)/,/^Host/s/^.*'$2' //p' $SSH_CONFIG
+}
+
 function ssh_prime()
 {
 	local _hosts=${@:-$PRIME}
@@ -166,6 +197,7 @@ case $1 in
 	status|st)       shift; ssh_status $@ ;;
 	local)           screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
+	ProxyCommand)    shift; ProxyCommand "$@" ;;
 	*)
 		ssh -fNC $1
 		case $2 in
