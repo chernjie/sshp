@@ -3,7 +3,7 @@
 DEVICE_NAME="Wi-Fi"
 PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
 SSH_CONFIG=$(ls ~/.ssh/config)
-SSH_GATEWAY=milka
+SSH_GATEWAY=gateway
 
 function _usage()
 {
