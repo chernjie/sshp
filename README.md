@@ -6,7 +6,7 @@ An ssh helper tool, provides a few helpful commands to everyday ssh-related task
 
 To Setup
 --------
-1. Add the following to your `~/.ssh/config`. This will use Shared SSH connections
+* Add the following to your `~/.ssh/config`. This will use Shared SSH connections
 ```
 Host *
 	ForwardAgent yes
@@ -15,11 +15,11 @@ Host *
 	ControlPersist 4h
 ```
 
-2. Add a list of common host to the prime list
+* Add a list of common host to the prime list
 ```
 $ echo git@github.com git@bitbucket.org host1 host2 host3 >> ~/.ssh/prime
 ```
-3. Add `sshp` to your `~/bin` directory
+* Add `sshp` to your `~/bin` directory
 
 
 To Use
