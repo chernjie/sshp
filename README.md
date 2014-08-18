@@ -4,10 +4,10 @@ sshp
 An ssh helper tool, provides a few helpful commands to everyday ssh-related task.
 
 
-To Setup
---------
+#### To Setup
+
 1. Add the following to your `~/.ssh/config`. This will use Shared SSH connections
-```
+    ```
 Host *
 	ForwardAgent yes
 	ControlMaster auto
@@ -16,16 +16,16 @@ Host *
 ```
 
 2. Add a list of common host to the prime list
-```
+    ```bash
 $ echo git@github.com git@bitbucket.org host1 host2 host3 >> ~/.ssh/prime
 ```
 
 3. Add `sshp` to your `~/bin` directory
 
 
-To Use
-------
-```
+#### To Use
+
+```bash
 $ sshp
 ```
 	sshp <HOST> [-d]
@@ -40,11 +40,11 @@ $ sshp
 	sshp proxy <HOST>
 		HOST as proxy server
 
-Advanced
---------
+#### Advanced
+
 If you want to separate your configuration files to smaller chunks, you can do so by creating a `~/.ssh/config.d` directory and `sshp` will consolidate all files found in this directory into `~/.ssh/config`
 Beware, this will overwrite your `~/.ssh/config` whenever there are changes in `~/.ssh/config.d`.
 
-Reference
----------
+#### Reference
+
 For more information on how to configure your `~/.ssh/config`, see http://linux.die.net/man/5/ssh_config
