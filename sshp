@@ -99,9 +99,7 @@ function kill_ssh()
 	if test -n "$force"
 	then
 		getActiveConnections | xargs rm
-		which networksetup >/dev/null &&
-			networksetup -getsocksfirewallproxy $DEVICE_NAME | grep ^Enabled | grep Yes -q &&
-			sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
+		kill_ssh_tunnel_proxy
 	fi
 }
 
@@ -131,9 +129,19 @@ function ssh_status()
 
 function ssh_tunnel_proxy()
 {
+	case $1 in
+		kill) kill_ssh_tunnel_proxy; exit 0;;
+	esac
 	ssh $1 -fNCD3128 &&
 		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxy $DEVICE_NAME localhost 3128 ) &&
 		( which networksetup >/dev/null && sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME on )
+}
+
+function kill_ssh_tunnel_proxy()
+{
+	which networksetup >/dev/null &&
+		networksetup -getsocksfirewallproxy $DEVICE_NAME | grep ^Enabled | grep Yes -q &&
+		sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
 }
 
 # http://wiki.gentoo.org/wiki/SSH_jump_host
