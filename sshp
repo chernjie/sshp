@@ -178,9 +178,25 @@ function _getPropertyByHost()
 function ssh_prime()
 {
 	local _hosts=${@:-$PRIME}
+	if test 1 -eq $#
+	then
+		_keep_trying $_hosts
+	else
+		for i in $_hosts
+		do
+			ssh -fNC $i &
+		done
+	fi
+}
+
+function _keep_trying()
+{
+	local _hosts=${@:-$PRIME}
 	for i in $_hosts
 	do
-		ssh -fNC $i &
+		until ssh $i echo $i
+		do echo .
+		done
 	done
 }
 
