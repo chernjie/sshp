@@ -192,10 +192,11 @@ function ssh_prime()
 function _keep_trying()
 {
 	local _hosts=${@:-$PRIME}
+	local _counter=0
 	for i in $_hosts
 	do
 		until ssh $i echo $i
-		do echo .
+		do _counter=$(($_counter+1)); echo -e $_counter
 		done
 	done
 }
