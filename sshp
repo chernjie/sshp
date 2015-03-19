@@ -165,14 +165,8 @@ function ProxyCommand()
 
 function _getPropertyByHost()
 {
-	test $(uname) = "Darwin" && _SED=gsed || _SED=sed
-	if test $_SED = "gsed" && which $_SED
-	then
-		echo gsed command not found
-		echo Consider "brew install gnu-sed"
-		exit 1
-	fi
-	$_SED -n -r -e '/^Host.*\s'$1'(\s|$)/,/^Host/s/^.*'$2' //p' $SSH_CONFIG
+	local _SED=$(command -v gsed)
+	${_SED:-sed} -n -r -e '/^Host.*\s'$1'(\s|$)/,/^Host/s/^.*'$2' //p' $SSH_CONFIG
 }
 
 function ssh_prime()
