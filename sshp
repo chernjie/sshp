@@ -28,8 +28,34 @@ function set_ssh_config()
 {
 	local _config=${1:-~/.ssh/config}
 	SSH_CONFIG=$(test -f $_config || touch $_config; ls $_config)
+
 	test -d "$SSH_CONFIG.d" || return
+	# check last modified timestamps and skip config generations
+	ls -t $SSH_CONFIG.d/* | head -1 |
+		xargs ls -t $SSH_CONFIG | head -1 |
+		xargs test "$SSH_CONFIG" = &&
+		return
+
 	cat $SSH_CONFIG.d/* > $SSH_CONFIG
+	local _skip=0
+	cp $SSH_CONFIG $SSH_CONFIG.proxy
+	cat $SSH_CONFIG.proxy | while read i
+	do
+		case "$i" in
+			'Host '*)
+				echo "$i" | grep -q '*' && _skip=1 && continue
+				echo "$i" | xargs -n1 | sed s/$/.p/g | sed -e s/^Host.p/Host/g | xargs echo
+			;;
+			''|'	')
+				test $_skip -eq 1 ||
+					echo "	ProxyCommand ssh -q $SSH_GATEWAY nc -q0 %h %p"
+					echo ""
+				test $_skip -eq 1 && _skip=0
+			;;
+			*) test $_skip -eq 1 || echo "	$i";;
+		esac
+	done >> $SSH_CONFIG
+	rm $SSH_CONFIG.proxy
 }
 set_ssh_config $SSH_CONFIG
 
