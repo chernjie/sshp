@@ -152,7 +152,7 @@ function ProxyCommand()
 	local   _jumpto="$(echo $1 | sed 's/^.*+//;/:/!s/$/ %p/;s/:/ /')"
 	local  _sshHost=$(echo $_jumpto | cut -d' ' -f1)
 	local  _sshPort=$2
-	local _hostname=$(_getPropertyByHost $_sshHost Hostname)
+	local _hostname=$(_getPropertyByHost $_sshHost Host[Nn]ame)
 	local     _user=$(_getPropertyByHost $_sshHost User)
 	local     _port=$(_getPropertyByHost $_sshHost Port)
 	local _identify=$(_getPropertyByHost $_sshHost IdentityFile)
