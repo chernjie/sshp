@@ -190,7 +190,7 @@ function _keep_trying()
 	for i in $_hosts
 	do
 		until ssh $i echo $i
-		do _counter=$(($_counter+1)); echo -e $_counter
+		do _counter=$(($_counter+1)); echo -e $_counter; sleep 1
 		done
 	done
 }
