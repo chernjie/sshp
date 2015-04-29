@@ -36,7 +36,7 @@ function set_ssh_config()
 		xargs test "$SSH_CONFIG" = &&
 		return
 
-	cat $SSH_CONFIG.d/* > $SSH_CONFIG
+	cat $SSH_CONFIG.d/*config > $SSH_CONFIG
 	local _skip=0
 	cp $SSH_CONFIG $SSH_CONFIG.proxy
 	cat $SSH_CONFIG.proxy | while read i
