@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DEVICE_NAME="Wi-Fi"
 PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
@@ -185,12 +185,12 @@ function ssh_prime()
 
 function _keep_trying()
 {
-	local _hosts=${@:-$PRIME}
+	local _hosts=$@
 	local _counter=0
 	for i in $_hosts
 	do
 		until ssh $i echo $i
-		do _counter=$(($_counter+1)); echo -e $_counter; sleep 1
+		do _counter=$(($_counter+1)); echo -e $_counter >&2; sleep 1
 		done
 	done
 }
@@ -205,6 +205,40 @@ function list_ssh_host()
 		grep "$REGEXP"
 }
 
+function _keep_trying_proxy()
+{
+	local _host="$1"
+	local _gate="$2"
+	local _counter=0
+	until ssh -q -O check $_gate 2> /dev/null
+	do
+		ssh $_gate echo $_gate
+		_counter=$(($_counter+1))
+		echo -e $_counter >&2
+		sleep 1
+	done
+	until ssh -q -O check $_host 2> /dev/null
+	do
+		ssh $_host -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" echo $_host
+		_counter=$(($_counter+1))
+		echo -e $_counter >&2
+		sleep 1
+	done
+}
+
+function parseHostsAndConnect()
+{
+	local stack="$@"
+	while echo "$stack" | grep -q +
+	do
+		local gateway=$(echo $stack | cut -d+ -f1 )
+		        stack=$(echo $stack | cut -d+ -f2-)
+		local    dest=$(echo $stack | cut -d+ -f1 )
+		_keep_trying_proxy "$dest" "$gateway"
+	done
+	ssh $stack
+}
+
 ### OPTIONS ###
 case $1 in
 	'')              _usage ;;
@@ -217,11 +251,11 @@ case $1 in
 	local*)          screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
 	ProxyCommand)    shift; ProxyCommand "$@" ;;
-	*)
+	screen)
 		ssh -fNC $1
-		case $2 in
-			-d) ssh -v $1 ;;
-			*)  ssh -v $1 -t screen -R -d -S $(whoami) ;;
-		esac
+		ssh -v $1 -t screen -R -d -S $(whoami)
+	;;
+	*)
+		parseHostsAndConnect "$@"
 	;;
 esac
