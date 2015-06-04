@@ -219,7 +219,7 @@ function _keep_trying_proxy()
 	done
 	until ssh -q -O check $_host 2> /dev/null
 	do
-		ssh $_host -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" echo $_host
+		ssh -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host echo $_host
 		_counter=$(($_counter+1))
 		echo -e $_counter >&2
 		sleep 1
