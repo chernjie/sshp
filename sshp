@@ -125,25 +125,6 @@ function kill_ssh_tunnel_proxy()
 		sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
 }
 
-# http://wiki.gentoo.org/wiki/SSH_jump_host
-# user%host1:22+host2+host3:22
-function ProxyCommand()
-{
-	local  _gateway="$(echo $1 | sed 's/+[^+]*$//;s/\([^+%%]*\)%%\([^+]*\)$/\2 -l \1/;s/:/ -p /')"
-	local   _jumpto="$(echo $1 | sed 's/^.*+//;/:/!s/$/ %p/;s/:/ /')"
-	local  _sshHost=$(echo $_jumpto | cut -d' ' -f1)
-	local  _sshPort=$2
-	local _hostname=$(_getPropertyByHost $_sshHost Host[Nn]ame)
-	local     _user=$(_getPropertyByHost $_sshHost User)
-	local     _port=$(_getPropertyByHost $_sshHost Port)
-	local _identify=$(_getPropertyByHost $_sshHost IdentityFile)
-
-	test "$_sshPort" = "%p" || _port="$_sshPort"
-	_port=${_port:-"$_sshPort"}
-	test -n "$_user" && _user=$_user@
-	ssh $_gateway nc -q0 $_hostname $_port
-}
-
 function _getPropertyByHost()
 {
 	local _SED=$(command -v gsed)
@@ -213,7 +194,7 @@ case $1 in
 	status|st)       shift; ssh_status $@ ;;
 	local*)          screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
-	ProxyCommand)    shift; ProxyCommand "$@" ;;
+	ProxyCommand)    shift; parseHostsAndConnect "$@" ;;
 	screen)
 		ssh -fNC $1
 		ssh -v $1 -t screen -R -d -S $(whoami)
