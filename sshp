@@ -129,6 +129,7 @@ function kill_ssh_tunnel_proxy()
 function ProxyCommand()
 {
 	parseHostsAndConnect "${@:0:$#}"
+	echo Successfully connected to "${@:0:$#}" >&2
 }
 
 function _getPropertyByHost()
@@ -158,7 +159,7 @@ function _keep_trying()
 			ssh $_host echo -n
 		else
 			ssh -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host echo -n
-		fi
+		fi > /dev/null
 		_err=$?
 		echo $_host $_counter >&2
 		test $_err -ne 0 && sleep 1
@@ -177,7 +178,7 @@ function list_ssh_host()
 
 function parseHostsAndConnect()
 {
-	local stack="$@"
+	stack="$@"
 	while echo "$stack" | grep -q +
 	do
 		local gateway=$(echo $stack | cut -d+ -f1 )
@@ -186,7 +187,6 @@ function parseHostsAndConnect()
 		_keep_trying "$gateway"
 		_gate="$gateway" _keep_trying "$dest"
 	done
-	ssh $stack
 }
 
 ### OPTIONS ###
@@ -207,5 +207,6 @@ case $1 in
 	;;
 	*)
 		parseHostsAndConnect "$@"
+		ssh $stack
 	;;
 esac
