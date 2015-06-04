@@ -125,6 +125,12 @@ function kill_ssh_tunnel_proxy()
 		sudo networksetup -setsocksfirewallproxystate $DEVICE_NAME off
 }
 
+# http://wiki.gentoo.org/wiki/SSH_jump_host
+function ProxyCommand()
+{
+	parseHostsAndConnect "${@:0:$#}"
+}
+
 function _getPropertyByHost()
 {
 	local _SED=$(command -v gsed)
@@ -194,7 +200,7 @@ case $1 in
 	status|st)       shift; ssh_status $@ ;;
 	local*)          screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
-	ProxyCommand)    shift; parseHostsAndConnect "$@" ;;
+	ProxyCommand)    shift; ProxyCommand "$@" ;;
 	screen)
 		ssh -fNC $1
 		ssh -v $1 -t screen -R -d -S $(whoami)
