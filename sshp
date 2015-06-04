@@ -152,16 +152,10 @@ function _getPropertyByHost()
 
 function ssh_prime()
 {
-	local _hosts=${@:-$PRIME}
-	if test 1 -eq $#
-	then
-		_keep_trying $_hosts
-	else
-		for i in $_hosts
-		do
-			ssh -fNC $i &
-		done
-	fi
+	for i
+	do
+		_keep_trying $i
+	done
 }
 
 function _keep_trying()
@@ -226,7 +220,7 @@ case $1 in
 	edit|-e)         vim $0 ;;
 	info|grep|search|s)shift; show_ssh_config $@ ;;
 	list|-l)         shift; list_ssh_host $@ ;;
-	prime|-p|start)  shift; ssh_prime $@ ;;
+	prime|-p|start)  shift; ssh_prime ${@:-$PRIME} ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
 	status|st)       shift; ssh_status $@ ;;
 	local*)          screen -R -d -S $(whoami) ;;
