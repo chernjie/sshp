@@ -160,13 +160,21 @@ function ssh_prime()
 
 function _keep_trying()
 {
-	local _hosts=$@
+	local _host="$@"
 	local _counter=0
-	for i in $_hosts
+	local _err=0
+	until ssh -q -O check $_host 2> /dev/null
 	do
-		until ssh $i echo $i
-		do _counter=$(($_counter+1)); echo -e $_counter >&2; sleep 1
-		done
+		_counter=$(($_counter+1))
+		if test -z "$_gate"
+		then
+			ssh $_host echo -n
+		else
+			ssh -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host echo -n
+		fi
+		_err=$?
+		echo $_host $_counter >&2
+		test $_err -ne 0 && sleep 1
 	done
 }
 
@@ -180,27 +188,6 @@ function list_ssh_host()
 		grep "$REGEXP"
 }
 
-function _keep_trying_proxy()
-{
-	local _host="$1"
-	local _gate="$2"
-	local _counter=0
-	until ssh -q -O check $_gate 2> /dev/null
-	do
-		ssh $_gate echo $_gate
-		_counter=$(($_counter+1))
-		echo -e $_counter >&2
-		sleep 1
-	done
-	until ssh -q -O check $_host 2> /dev/null
-	do
-		ssh -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host echo $_host
-		_counter=$(($_counter+1))
-		echo -e $_counter >&2
-		sleep 1
-	done
-}
-
 function parseHostsAndConnect()
 {
 	local stack="$@"
@@ -209,7 +196,8 @@ function parseHostsAndConnect()
 		local gateway=$(echo $stack | cut -d+ -f1 )
 		        stack=$(echo $stack | cut -d+ -f2-)
 		local    dest=$(echo $stack | cut -d+ -f1 )
-		_keep_trying_proxy "$dest" "$gateway"
+		_keep_trying "$gateway"
+		_gate="$gateway" _keep_trying "$dest"
 	done
 	ssh $stack
 }
