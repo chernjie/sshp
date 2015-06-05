@@ -9,17 +9,23 @@ function _usage()
 {
 	cat << USAGE
 	Usage:
-		${0##/*/} <HOST> [-d]
+		${0##/*/} <HOST>
 			Login to MACHINE and start a screen session
-			-d for no screen
-		${0##/*/} [info|grep] [pattern]
+
+		${0##/*/} [info] [pattern]
+		${0##/*/} [grep] [pattern]
+		${0##/*/} [s|search] [pattern]
 			search your ~/.ssh/config and accepts all options of grep
+
 		${0##/*/} [list|-l]
 			list all hosts
+
 		${0##/*/} [start|status|stop] <HOST..>
-			Check the SSH connection status of a HOST 
+			Check the SSH connection status of a HOST
+
 		${0##/*/} proxy <HOST>
 			HOST as proxy server
+
 USAGE
 	grep -A100 '^#* OPTIONS #*$' $0
 }
