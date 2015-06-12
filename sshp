@@ -148,7 +148,7 @@ function ssh_prime()
 {
 	for i
 	do
-		_keep_trying $i
+		parseHostsAndConnect $i
 	done
 }
 
