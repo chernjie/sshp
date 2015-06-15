@@ -208,6 +208,7 @@ case $1 in
 	proxy)           shift; ssh_tunnel_proxy $1;;
 	ProxyCommand)    shift; ProxyCommand "$@" ;;
 	screen)
+		shift
 		ssh -fNC $1
 		ssh -v $1 -t screen -R -d -S $(whoami)
 	;;
