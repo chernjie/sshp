@@ -209,8 +209,8 @@ case $1 in
 	ProxyCommand)    shift; ProxyCommand "$@" ;;
 	screen)
 		shift
-		ssh -fNC $1
-		ssh -v $1 -t screen -R -d -S $(whoami)
+		parseHostsAndConnect "$@"
+		ssh $stack -t screen -R -d -S $(whoami)
 	;;
 	*)
 		parseHostsAndConnect "$@"
