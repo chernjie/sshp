@@ -162,9 +162,9 @@ function _keep_trying()
 		_counter=$(($_counter+1))
 		if test -z "$_gate"
 		then
-			ssh $_host echo -n
+			ssh -fN $_host
 		else
-			ssh -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host echo -n
+			ssh -fN -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host
 		fi > /dev/null
 		_err=$?
 		echo $_host $_counter >&2
