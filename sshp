@@ -149,6 +149,7 @@ function ssh_prime()
 	for i
 	do
 		parseHostsAndConnect $i
+		_keep_trying "$stack"
 	done
 }
 
