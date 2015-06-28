@@ -170,6 +170,7 @@ function _keep_trying()
 		_err=$?
 		echo $_host $_counter >&2
 		test $_err -ne 0 && sleep 1
+		test $_counter -ge 99 && echo Please try again later: ssh $_host >&2 && exit 1
 	done
 }
 
