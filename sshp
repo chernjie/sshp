@@ -160,12 +160,8 @@ function _keep_trying()
 	until ssh -q -O check $_host 2> /dev/null
 	do
 		_counter=$(($_counter+1))
-		if test -z "$_gate"
-		then
-			ssh -fN $_host
-		else
-			ssh -fN -o ProxyCommand="ssh -q $_gate nc -q0 %h %p" $_host
-		fi > /dev/null
+		ssh -fN -D $_dynamicport -o ExitOnForwardFailure=yes $_gate &&
+		ssh -fN -o ProxyCommand="nc -x 127.0.0.1:$_dynamicport %h %p" $_host
 		_err=$?
 		echo $_host $_counter >&2
 		test $_err -ne 0 && sleep 1
@@ -186,13 +182,14 @@ function list_ssh_host()
 function parseHostsAndConnect()
 {
 	stack="$@"
+	local _dynamicport=8213
 	while echo "$stack" | grep -q +
 	do
 		local gateway=$(echo $stack | cut -d+ -f1 )
 		        stack=$(echo $stack | cut -d+ -f2-)
 		local    dest=$(echo $stack | cut -d+ -f1 )
-		_keep_trying "$gateway"
 		_gate="$gateway" _keep_trying "$dest"
+		_dynamicport=$((1 + $_dynamicport))
 	done
 }
 
