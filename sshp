@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 DEVICE_NAME="Wi-Fi"
-PRIME="$(test -f ~/.ssh/prime && cat ~/.ssh/prime)"
 SSH_CONFIG=$(ls ~/.ssh/config)
 
 function _usage()
@@ -172,7 +171,7 @@ function ssh_prime()
 	for i
 	do
 		parseHostsAndConnect $i
-		_keep_trying "$stack"
+		ssh -fN "$stack"
 	done
 }
 
@@ -253,7 +252,7 @@ case $1 in
 	edit|-e)         vim $0 ;;
 	info|grep|search)shift; show_ssh_config $@ ;;
 	list|-l)         shift; list_ssh_host $@ ;;
-	prime|-p|start)  shift; ssh_prime ${@:-$PRIME} ;;
+	prime|-p|start)  shift; ssh_prime $@ ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
 	status|st)       shift; ssh_status $@ ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
