@@ -7,12 +7,16 @@ function _usage()
 {
 	cat << USAGE
 	Usage:
+
 		${0##/*/} <HOST>
-			Login to MACHINE and start a screen session
+			Login to MACHINE
+
+		${0##/*/} <HOST1>+<HOST2>
+			Login to HOST2 via HOST1
 
 		${0##/*/} [info] [pattern]
 		${0##/*/} [grep] [pattern]
-		${0##/*/} [s|search] [pattern]
+		${0##/*/} [search] [pattern]
 			search your ~/.ssh/config and accepts all options of grep
 
 		${0##/*/} [list|-l]

@@ -1,40 +1,23 @@
 sshp
 ====
 
-An ssh helper tool, provides a few helpful commands to everyday ssh-related task.
-
-
-#### To Setup
-
-1. Add the following to your `~/.ssh/config`. This will use Shared SSH connections
-    ```
-Host *
-	ForwardAgent yes
-	ControlMaster auto
-	ControlPath /tmp/%r@%h:%p
-	ControlPersist 4h
-	KeepAlive yes
-```
-
-2. Add a list of common host to the prime list
-    ```bash
-$ echo git@github.com git@bitbucket.org host1 host2 host3 >> ~/.ssh/prime
-```
-
-3. Add `sshp` to your `~/bin` directory
-
+Host chaining, search available configuration and other helpful commands for everyday ssh-related task.
 
 #### To Use
 
-```bash
+```shell
 $ sshp
 ```
+
 	sshp <HOST>
-		Login to MACHINE and start a screen session
+		Login to MACHINE
+
+	sshp <HOST1>+<HOST2>
+		Login to HOST2 via HOST1
 
 	sshp [info] [pattern]
 	sshp [grep] [pattern]
-	sshp [s|search] [pattern]
+	sshp [search] [pattern]
 		search your ~/.ssh/config and accepts all options of grep
 
 	sshp [list|-l]
@@ -46,14 +29,10 @@ $ sshp
 	sshp proxy <HOST>
 		HOST as proxy server
 
-#### Advanced
-
-If you want to separate your configuration files to smaller chunks, you can do so by creating a `~/.ssh/config.d` directory and `sshp` will consolidate all files found in this directory into `~/.ssh/config`
-Beware, this will overwrite your `~/.ssh/config` whenever there are changes in `~/.ssh/config.d`.
 
 ### Host chaining
 
-`sshp` supports host chaining, this take advantage of `ProxyCommand` and establish a connection for you. Your proxy machine will need to have `nc` installed for this to work.
+`sshp` supports host chaining, this take advantage of `ProxyCommand` and establish a connection for you. Your local machine will need to have `nc` installed for this to work.
 
 ```shell
 $ sshp host1+host2
@@ -78,10 +57,32 @@ Host *+*
 
 ##### Example
 
-```
+```shell
 $ ssh host1+host2
 ```
 
+
+#### To Setup
+
+1. Add the following to your `~/.ssh/config`. This will use Shared SSH connections
+    ```
+Host *
+	ForwardAgent yes
+	ControlMaster auto
+	ControlPath /tmp/%r@%h:%p
+	ControlPersist 4h
+	KeepAlive yes
+	Compression yes
+	UseRoaming no
+```
+
+2. Add `sshp` to your `~/bin` directory
+
+
+#### Advanced
+
+If you want to separate your configuration files to smaller chunks, you can do so by creating a `~/.ssh/config.d` directory and `sshp` will consolidate all files found in this directory into `~/.ssh/config`
+Beware, this will overwrite your `~/.ssh/config` whenever there are changes in `~/.ssh/config.d`.
 
 #### Reference
 
