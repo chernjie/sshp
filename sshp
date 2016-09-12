@@ -186,7 +186,7 @@ function ssh_prime()
 	for i
 	do
 		parseHostsAndConnect $i
-		ssh -fN "$stack"
+		_keep_trying "$stack"
 	done
 }
 
@@ -198,9 +198,14 @@ function _keep_trying()
 	until ssh -q -O check $_host 2> /dev/null
 	do
 		_counter=$(($_counter+1))
-		_dynamicport=$(_assignport $_gate)
-		ssh -fN -D $_dynamicport -o ExitOnForwardFailure=yes $_gate &&
-		ssh -fN -o ProxyCommand="nc -x 127.0.0.1:$_dynamicport %h %p" $_host
+		if test -z "$_gate"
+		then
+			ssh -fN $_host
+		else
+			local _dynamicport=$(_assignport $_gate)
+			ssh -fN -D $_dynamicport -o ExitOnForwardFailure=yes $_gate &&
+			ssh -fN -o ProxyCommand="nc -x 127.0.0.1:$_dynamicport %h %p" $_host
+		fi
 		_err=$?
 		echo $_host $_counter >&2
 		test $_err -ne 0 && sleep 1
