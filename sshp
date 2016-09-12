@@ -32,6 +32,17 @@ USAGE
 	grep -A100 '^#* OPTIONS #*$' $0
 }
 
+function require () {
+  for i
+  do
+    if ! command -v $i > /dev/null
+    then
+      echo Command $i not found >&2
+      exit 1
+    fi
+  done
+}
+
 function _deprecated()
 {
 	echo deprecated command: $1 >&2
@@ -250,6 +261,7 @@ function parseHostsAndConnect()
 	done
 }
 
+require nc ssh sed grep while tr cat xargs head tail ls touch column basename cut rm read test host
 ### OPTIONS ###
 case $1 in
 	'')              _usage ;;
