@@ -29,6 +29,11 @@ USAGE
 	grep -A100 '^#* OPTIONS #*$' $0
 }
 
+function _deprecated()
+{
+	echo deprecated command: $1 >&2
+}
+
 # Test an IP address for validity:
 # Usage:
 #      valid_ip IP_ADDRESS
@@ -162,12 +167,6 @@ function ProxyCommand()
 	echo Successfully connected to "${@:0:$#}" >&2
 }
 
-function _getPropertyByHost()
-{
-	local _SED=$(command -v gsed)
-	${_SED:-sed} -n -r -e '/^Host.*\s'$1'(\s|$)/,/^Host/s/^.*'$2' //p' $SSH_CONFIG
-}
-
 function ssh_prime()
 {
 	for i
@@ -252,16 +251,17 @@ function parseHostsAndConnect()
 case $1 in
 	'')              _usage ;;
 	edit|-e)         vim $0 ;;
-	info|grep|search|s)shift; show_ssh_config $@ ;;
+	info|grep|search)shift; show_ssh_config $@ ;;
 	list|-l)         shift; list_ssh_host $@ ;;
 	prime|-p|start)  shift; ssh_prime ${@:-$PRIME} ;;
 	kill|-k|stop)    shift; kill_ssh $@ ;;
 	status|st)       shift; ssh_status $@ ;;
-	local*)          screen -R -d -S $(whoami) ;;
 	proxy)           shift; ssh_tunnel_proxy $1;;
 	ProxyCommand)    shift; ProxyCommand "$@" ;;
-	assignport)      shift; _assignport "$@" ;;
-	screen)
+	assignport)      _deprecated $1; shift; _assignport "$@" ;;   # deprecated
+	local*)          _deprecated $1; screen -R -d -S $(whoami) ;; # deprecated
+	screen)                                                       # deprecated
+		_deprecated $1
 		shift
 		parseHostsAndConnect "$@"
 		ssh $stack -t screen -R -d -S $(whoami)
