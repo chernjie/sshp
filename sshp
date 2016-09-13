@@ -210,7 +210,8 @@ function ssh_prime()
 	for i
 	do
 		parseHostsAndConnect $i
-		_keep_trying "$stack"
+		local ConnectTimeout=$(ssh -G "$stack" | grep connecttimeout | awk '{print 10 * $2}')
+		_keep_trying -o ConnectTimeout=$ConnectTimeout "$stack"
 	done
 }
 
