@@ -228,7 +228,7 @@ function _keep_trying()
 			ssh -fN $_host
 		else
 			local _dynamicport=$(_assignport $_gate)
-			ssh -fN -D $_dynamicport -o ExitOnForwardFailure=yes $_gate &&
+			ssh -fN -D $_dynamicport $_gate &&
 			ssh -fN -o ProxyCommand="nc -x 127.0.0.1:$_dynamicport %h %p" $_host
 		fi
 		_err=$?
