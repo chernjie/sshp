@@ -314,6 +314,11 @@ case $1 in
 		parseHostsAndConnect "$@"
 		ssh $stack -t screen -R -d -S $(whoami)
 	;;
+	tmux)
+		shift
+		parseHostsAndConnect "$@"
+		ssh $stack -t tmux attach-session -t $(whoami)
+	;;
 	*)
 		parseHostsAndConnect "$@"
 		ssh $stack
