@@ -317,7 +317,7 @@ case $1 in
 	tmux)
 		shift
 		parseHostsAndConnect "$@"
-		ssh $stack -t tmux attach-session -t $(whoami)
+		ssh $stack -t tmux new-session -A -s $(whoami)
 	;;
 	*)
 		parseHostsAndConnect "$@"
